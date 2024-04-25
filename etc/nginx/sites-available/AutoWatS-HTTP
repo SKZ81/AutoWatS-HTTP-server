@@ -1,0 +1,49 @@
+server {
+    listen 80;
+    server_name $SERVER_NAME;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    server_name $SERVER_NAME;
+
+    root /var/www/AutoWatS-HTTP/;
+    index index.html index.htm index.py;
+
+    location /images/ {
+        # Allow access to the images directory
+    }
+
+    location = / {
+        rewrite ^/$ /cgi-bin/timestamp.py last;
+    }
+
+    location = /timestamp {
+        rewrite ^/timestamp$ /cgi-bin/timestamp.py last;
+    }
+
+    location = /varieties {
+        rewrite ^/varieties$ /cgi-bin/get_varieties.py last;
+    }
+
+    location = /plant/get {
+        rewrite ^/plant/get$ /cgi-bin/search_plant_id.py last;
+    }
+
+    location = /plant/update {
+        rewrite ^/plant/update$ /cgi-bin/update_plant.py last;
+    }
+
+    location ~* \.py$ {
+        include fastcgi_params;
+        fastcgi_pass unix:/var/run/fcgiwrap.socket;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/vps-68d3ea17.vps.ovh.net/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/vps-68d3ea17.vps.ovh.net/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
