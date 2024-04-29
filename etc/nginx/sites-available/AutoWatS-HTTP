@@ -8,18 +8,17 @@ server {
     server_name $SERVER_NAME;
 
     root /var/www/AutoWatS-HTTP/;
-    index index.html index.htm index.py;
 
     location /images/ {
         # Allow access to the images directory
     }
 
     location = / {
-        rewrite ^/$ /cgi-bin/timestamp.py last;
+        rewrite ^/$ /cgi-bin/timestamps.py last;
     }
 
-    location = /timestamp {
-        rewrite ^/timestamp$ /cgi-bin/timestamp.py last;
+    location = /timestamps {
+        rewrite ^/timestamps$ /cgi-bin/timestamps.py last;
     }
 
     location = /varieties {
@@ -34,10 +33,28 @@ server {
         rewrite ^/plant/update$ /cgi-bin/update_plant.py last;
     }
 
+    location = /plant/create_id {
+        rewrite ^/plant/create_id$ /cgi-bin/create_tag.py last;
+    }
+
+    location = /debug/get_uuids {
+        rewrite ^/debug/get_uuids$ /cgi-bin/debug_list_uuids.py last;
+    }
+
     location ~* \.py$ {
         include fastcgi_params;
         fastcgi_pass unix:/var/run/fcgiwrap.socket;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+
+    location ~ /\. {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+
+    location / {
+        return 403;
     }
 
     listen 443 ssl; # managed by Certbot
