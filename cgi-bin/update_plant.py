@@ -10,11 +10,12 @@ import config
 
 # Get the request method (GET or POST)
 request_method = os.environ.get('REQUEST_METHOD', '')
+if (request_method != 'POST'):
+    print("Status: 400 Bad Request\n\n")
+    sys.exit(0)
+
 content_length = int(os.environ.get('CONTENT_LENGTH', 0))
 request_body = sys.stdin.read(content_length)
-# query_string = os.environ.get('QUERY_STRING', '')
-# params = urllib.parse.parse_qs(query_string)
-# uuid = params.get('uuid', [''])[0]
 params = json.loads(request_body);
 set_clause = ', '.join([f"{key} = '{value}'" for key, value in params.items() if key != 'UUID'])
 

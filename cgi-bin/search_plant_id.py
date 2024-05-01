@@ -83,11 +83,11 @@ def do_json(column_names, data):
     print(json.dumps(row_dict))
 
 
+request_method = os.environ.get('REQUEST_METHOD', '')
+if (request_method != 'GET'):
+    print("Status: 400 Bad Request\n\n")
+    sys.exit(0)
 
-# Get the request method (GET or POST)
-# request_method = os.environ.get('REQUEST_METHOD', '')
-# content_length = int(os.environ.get('CONTENT_LENGTH', 0))
-# request_body = sys.stdin.read(content_length)
 query_string = os.environ.get('QUERY_STRING', '')
 params = urllib.parse.parse_qs(query_string)
 uuid = params.get('uuid', [''])[0]

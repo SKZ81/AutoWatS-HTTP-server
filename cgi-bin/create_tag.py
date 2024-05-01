@@ -11,6 +11,9 @@ import config
 
 # Get the request method (GET or POST)
 request_method = os.environ.get('REQUEST_METHOD', '')
+if (request_method != 'POST'):
+    print("Status: 400 Bad Request\n\n")
+    sys.exit(0)
 content_length = int(os.environ.get('CONTENT_LENGTH', 0))
 request_body = sys.stdin.read(content_length)
 # query_string = os.environ.get('QUERY_STRING', '')
