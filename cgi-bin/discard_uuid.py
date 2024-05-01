@@ -8,7 +8,6 @@ import json
 import urllib
 import config
 
-
 # Get the request method (GET or POST)
 request_method = os.environ.get('REQUEST_METHOD', '')
 if (request_method != 'POST'):
@@ -16,6 +15,8 @@ if (request_method != 'POST'):
     sys.exit(0)
 content_length = int(os.environ.get('CONTENT_LENGTH', 0))
 request_body = sys.stdin.read(content_length)
+
+
 # query_string = os.environ.get('QUERY_STRING', '')
 # params = urllib.parse.parse_qs(query_string)
 # uuid = params.get('uuid', [''])[0]
@@ -25,7 +26,7 @@ SQLRequest=None
 
 try:
     uuid = params["uuid"]
-    SQLRequest=f"INSERT INTO PLANTS (UUID) VALUES ('{uuid}')"
+    SQLRequest=f"UPDATE PLANTS SET ACTIVE=FALSE WHERE ACTIVE=TRUE AND UUID='{uuid}'"
 except KeyError as e:
     print("Status: 400 Bad Request")
     print("Content-Type: application/json\n")
@@ -40,7 +41,7 @@ try:
     if cursor.rowcount == 0:
         print("Status: 404 Not Found")
         print("Content-Type: application/json\n")
-        print('{"result": "failed", "reason": "%s", "SQLquery":"%s"}'%(str(e), SQLRequest))
+        print('{"result": "failed", "reason": "UUID does not exist (or inactive)", "SQLquery":"%s"}'%(SQLRequest))
     else:
         conn.commit()
         print("Content-Type: application/json\n")

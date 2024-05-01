@@ -37,6 +37,10 @@ server {
         rewrite ^/plant/create_id$ /cgi-bin/create_tag.py last;
     }
 
+    location = /plant/discard_id {
+        rewrite ^/plant/discard_id$ /cgi-bin/discard_uuid.py last;
+    }
+
     location = /debug/get_uuids {
         rewrite ^/debug/get_uuids$ /cgi-bin/debug_list_uuids.py last;
     }

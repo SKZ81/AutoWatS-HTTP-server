@@ -1,6 +1,11 @@
 PRAGMA foreign_keys=OFF;
 BEGIN TRANSACTION;
-CREATE TABLE varieties (
+
+DROP TABLE Varieties;
+DROP TABLE Plants;
+DROP TABLE LastUpdatedTimestamps;
+
+CREATE TABLE Varieties (
 	id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 	name TEXT NOT NULL,
 	short_descrp TEXT(240),
@@ -19,12 +24,15 @@ CREATE TABLE Plants (
 	germination_date TEXT(10),
 	blooming_date TEXT(10),
 	yielding_date TEXT(10),
+	active INTEGER DEFAULT (TRUE),
 	CONSTRAINT Plants_PK PRIMARY KEY (UUID)
 );
-INSERT INTO Plants VALUES('c586f3a2-3452-450e-a5b4-eb5b1d21e0ec',3,-1,'29/4/2024','','');
-INSERT INTO Plants VALUES('b8c9de57-669f-4dc4-bd9f-eb1e6e6e67d9',4,-1,'19/4/2024','29/4/2024','');
-INSERT INTO Plants VALUES('a9e2c8f1-8c98-4f35-ae22-84de0577e261',2,-1,'11/4/2024','29/4/2024','16/5/2024');
+
+INSERT INTO Plants VALUES('c586f3a2-3452-450e-a5b4-eb5b1d21e0ec',3,-1,'29/4/2024','','',TRUE);
+INSERT INTO Plants VALUES('b8c9de57-669f-4dc4-bd9f-eb1e6e6e67d9',4,-1,'19/4/2024','29/4/2024','',TRUE);
+INSERT INTO Plants VALUES('a9e2c8f1-8c98-4f35-ae22-84de0577e261',2,-1,'11/4/2024','29/4/2024','16/5/2024',TRUE);
 
 DELETE FROM sqlite_sequence;
 INSERT INTO sqlite_sequence VALUES('varieties',6);
+
 COMMIT;

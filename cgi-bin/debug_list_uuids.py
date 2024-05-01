@@ -91,7 +91,7 @@ if (request_method != 'GET'):
 
 conn = sqlite3.connect(config.DATABASE_FILE)
 cursor = conn.cursor()
-cursor.execute('SELECT UUID FROM Plants')
+cursor.execute('SELECT UUID FROM Plants WHERE ACTIVE=TRUE')
 data = cursor.fetchall()
 conn.close()
 column_names = [desc[0] for desc in cursor.description]

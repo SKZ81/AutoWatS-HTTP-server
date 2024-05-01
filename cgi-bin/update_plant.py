@@ -19,7 +19,7 @@ request_body = sys.stdin.read(content_length)
 params = json.loads(request_body);
 set_clause = ', '.join([f"{key} = '{value}'" for key, value in params.items() if key != 'UUID'])
 
-SQLrequest = f"UPDATE Plants SET {set_clause} WHERE UUID = '{params['UUID']}'"
+SQLrequest = f"UPDATE Plants SET {set_clause} WHERE ACTIVE=TRUE AND UUID='{params['UUID']}'"
 
 try:
     conn = sqlite3.connect(config.DATABASE_FILE)
