@@ -1,19 +1,19 @@
 #!/bin/sh
 
-. server.data
+set -x
+
+. ./server.data
 #    Example file:
 # export SERVER_NAME=your_domain.com
 # export SERVER_ROOT=/var/www/AutoWatS-HTTP
 
-sudo scp -r cgi-bin/ $SERVER_NAME:$SERVER_ROOT/
-sudo scp -r images/ $SERVER_NAME:$SERVER_ROOT/
-sudo scp -r db/ $SERVER_NAME:$SERVER_ROOT/
-
-#sudo scp -r etc/systemd/system/nginx.service.d/local.conf /etc/systemd/system/nginx.service.d/local.conf
-#     Example file:
-# [Service]
-# Environment="SERVER_NAME=your_domain.com"
-
-sudo scp -r etc/nginx/nginx.conf $SERVER_NAME:/etc/nginx/nginx.conf
-sudo scp -r etc/nginx/sites-available/AutoWatS-HTTP $SERVER_NAME:/etc/nginx/sites-available/AutoWatS-HTTP
+TMP=$(mktemp -d -t tmp.XXXXXXXXXX)
+ssh $SERVER_NAME "mkdir -p ~/tmp"
+#tar czvf $TAR_OPTS $TMP/AutoWatS-HTTP.tgz .
+tar czvf $TMP/AutoWatS-HTTP.tgz $TAR_OPTS .
+scp $TMP/AutoWatS-HTTP.tgz $SERVER_NAME:~/tmp
+scp install-AutoWatS-HTTP.sh $SERVER_NAME:~/tmp
+rm -rf $TMP
+ssh $SERVER_NAME "~/tmp/install-AutoWatS-HTTP.sh $SERVER_ROOT"
+ssh $SERVER_NAME "rm -rf ~/tmp"
 
