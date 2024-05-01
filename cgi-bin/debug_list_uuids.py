@@ -2,7 +2,6 @@
 
 import os
 import sqlite3
-import cgitb
 import json
 import config
 
@@ -85,7 +84,6 @@ def do_json(column_names, data):
     print(json.dumps(json_data))
 
 
-cgitb.enable()
 
 conn = sqlite3.connect(config.DATABASE_FILE)
 cursor = conn.cursor()

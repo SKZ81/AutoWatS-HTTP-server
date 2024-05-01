@@ -3,13 +3,11 @@
 import os
 import sys
 import sqlite3
-import cgitb
 import cgi
 import json
 import urllib
 import config
 
-cgitb.enable() #disable in prod !!!
 
 # Get the request method (GET or POST)
 request_method = os.environ.get('REQUEST_METHOD', '')
