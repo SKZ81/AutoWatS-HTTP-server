@@ -83,11 +83,7 @@ def do_json(column_names, data):
     print("Content-Type: application/json\n")
     print(json.dumps(json_data))
 
-
-request_method = os.environ.get('REQUEST_METHOD', '')
-if (request_method != 'GET'):
-    print("Status: 400 Bad Request\n\n")
-    sys.exit(0)
+check_request_method("GET")
 
 conn = sqlite3.connect(config.DATABASE_FILE)
 cursor = conn.cursor()

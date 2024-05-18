@@ -1,10 +1,4 @@
 server {
-    listen 80;
-    server_name $SERVER_NAME;
-    return 301 https://$host$request_uri;
-}
-
-server {
     server_name $SERVER_NAME;
 
     root /var/www/AutoWatS-HTTP/;

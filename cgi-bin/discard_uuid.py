@@ -11,7 +11,9 @@ import config
 # Get the request method (GET or POST)
 request_method = os.environ.get('REQUEST_METHOD', '')
 if (request_method != 'POST'):
-    print("Status: 400 Bad Request\n\n")
+    print("Status: 400 Bad Request")
+    print("Content-Type: application/json\n")
+    print('{"result": "failed", "reason": "only POST allowed"}')
     sys.exit(0)
 content_length = int(os.environ.get('CONTENT_LENGTH', 0))
 request_body = sys.stdin.read(content_length)
@@ -30,7 +32,7 @@ try:
 except KeyError as e:
     print("Status: 400 Bad Request")
     print("Content-Type: application/json\n")
-    print("{'reason': 'UUID not found in query body'}")
+    print('{"result": "failed", "reason": "UUID not found in query body"}')
 
 
 conn = sqlite3.connect(config.DATABASE_FILE)
