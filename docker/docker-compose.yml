@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  python-cgi-server:
+    build: .
+    container_name: autowats-cgi-server
+    ports:
+      - "1486:1486"
+    restart: unless-stopped
+    networks:
+      - cgi_network
+
+networks:
+  cgi_network:
+    driver: bridge
