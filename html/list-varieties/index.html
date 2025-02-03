@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Font Awesome -->
+  <script src="ressources/list-varieties.js"></script>
+  <script src="ressources/file-upload.js"></script>
+  <title>Variety Viewer</title>
+  <link rel="stylesheet" href="ressources/list-varieties.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Variety Viewer</h1>
+   <div class="variety-container">
+        <label for="variety-select">Variety Name:</label>
+        <div class="select-and-button">
+            <select id="variety-select">
+            <option value="" disabled selected>Loading...</option>
+            </select>
+            <button id="add-variety-button" class="pushy__btn pushy__btn--md pushy__btn--blue" aria-label="Add Variety">
+            <i class="fas fa-plus-circle"></i>
+            </button>
+        </div>
+    </div>
+
+    <label>Photo:</label>
+    <div id="photo-preview-container">
+        <img id="photo-preview" alt="Variety Photo" src="placeholder.jpg" class="photo-display"/>
+    </div>
+    <div id="photo-drag-container" style="display: none;">
+        <img id="upload-preview" src="" alt="Upload preview" class="photo-display"/>
+        <div id="photo-dragarea" class="drag-area">
+            <div class="icon">
+                <i class="fas fa-images"></i>
+            </div>
+            <span class="header">Drag & Drop, or</span>
+            <span class="button">browse</span>
+            <input id="photo-input" type="file" hidden />
+            <span class="support">Supports: JPEG, JPG, PNG</span>
+        </div>
+    </div>
+
+    <label for="short-descr">Short Description:</label>
+    <textarea id="short-descr" rows="4" readonly></textarea>
+
+    <label for="blooming-time">Blooming Time (days):</label>
+    <input type="number" id="blooming-time" readonly />
+    <div class="button-container">
+        <!-- Remove Button -->
+        <button id="remove-btn" class="pushy__btn pushy__btn--df pushy__btn--red" aria-label="Remove">
+            <i class="fas fa-trash"></i> Remove
+        </button>
+
+        <!-- Cancel Button -->
+        <button id="cancel-btn" class="pushy__btn pushy__btn--df pushy__btn--red" aria-label="Cancel" style="display: none;">
+            <i class="fas fa-times"></i> Cancel
+        </button>
+
+        <!-- Edit Button -->
+        <button id="edit-btn" class="pushy__btn pushy__btn--df pushy__btn--blue" aria-label="Remove">
+            <i class="fas fa-pen"></i> Edit
+        </button>
+
+        <!-- Submit Button -->
+        <button id="submit-btn" class="pushy__btn pushy__btn--df pushy__btn--green" aria-label="Submit" style="display: none;">
+            <i class="fas fa-check"></i> Submit
+        </button>
+    </div>
+  </div>
+
+  <!--<script>init_page();</script>-->
+</body>
+</html>
