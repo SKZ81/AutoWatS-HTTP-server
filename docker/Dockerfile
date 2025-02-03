@@ -24,7 +24,6 @@ RUN cp -r /tmp/autowats/db /var/www/
 
 # Ensure correct permissions for CGI scripts
 RUN chmod +x /var/www/cgi-bin/*.py
-RUN chown -R www-data:www-data /var/www/
 
 # Create directories for CGI scripts and static content
 RUN mkdir -p /var/www/cgi-bin /var/www/html
@@ -38,6 +37,8 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Initialize SQLite database
 RUN cd /var/www/db && sqlite3 database.db < database.sql
 
+# Give ownership to web user
+RUN chown -R www-data:www-data /var/www/
 # Expose only port 1486
 EXPOSE 1486
 
