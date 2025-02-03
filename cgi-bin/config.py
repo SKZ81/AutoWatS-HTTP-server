@@ -2,7 +2,7 @@ import os
 import sys
 import traceback
 
-DATABASE_FILE="/var/www/AutoWatS-HTTP/db/database.db"
+DATABASE_FILE="/var/www/db/database.db"
 DEBUG_MODE=True
 
 def check_request_method(expected):
