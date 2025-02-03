@@ -45,13 +45,7 @@ img {
     for col in column_names:
         print("    <th>%s</th>\n"%col)
     print("  </tr>\n")
-    # Prepare JSON object
-    # json_data = []
     for row in data:
-        # row_dict = {}
-        # for i, value in enumerate(row):
-        #     row_dict[column_names[i]] = value
-        # json_data.append(row_dict)
         print("  <tr>\n")
         for i,value in enumerate(row):
             if i == 3:
@@ -59,10 +53,6 @@ img {
             else:
                 print("    <th>%s</th>\n"%value)
         print("  </tr>\n")
-
-    # Dump JSON plaintext
-    # json_text = json.dumps(json_data)
-    # print(json_text)
 
     print("""
 </table>
@@ -83,18 +73,18 @@ def do_json(column_names, data):
     print("Content-Type: application/json\n")
     print(json.dumps(json_data))
 
+@config.cgi_tb
+def process_request():
+	config.check_request_method("GET")
 
-request_method = os.environ.get('REQUEST_METHOD', '')
-if (request_method != 'GET'):
-    print("Status: 400 Bad Request\n\n")
-    sys.exit(0)
+	conn = sqlite3.connect(config.DATABASE_FILE)
+	cursor = conn.cursor()
+	cursor.execute('SELECT * FROM varieties')
+	data = cursor.fetchall()
+	conn.close()
+	column_names = [desc[0] for desc in cursor.description]
 
-conn = sqlite3.connect(config.DATABASE_FILE)
-cursor = conn.cursor()
-cursor.execute('SELECT * FROM varieties')
-data = cursor.fetchall()
-conn.close()
-column_names = [desc[0] for desc in cursor.description]
+	do_json(column_names, data)
+	# do_html(column_names, data)
 
-do_json(column_names, data)
-# do_html(column_names, data)
+process_request()
