@@ -1,9 +1,9 @@
 services:
-  python-cgi-server:
+  autowats-cgi-server:
     build: .
     container_name: autowats-cgi-server
     ports:
-      - "1486:1486"
+      - "127.0.0.1:1486:1486"
     restart: unless-stopped
     networks:
       - cgi_network
