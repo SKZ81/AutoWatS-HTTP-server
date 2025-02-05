@@ -35,10 +35,15 @@ RUN chown -R www-data:www-data /var/www/cgi-bin
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Initialize SQLite database
-RUN cd /var/www/db && sqlite3 database.db < database.sql
+RUN mkdir -p /var/www/db && \
+    [ -f /var/www/db/database.db ] || sqlite3 /var/www/db/database.db < /var/www/db/database.sql
 
 # Give ownership to web user
 RUN chown -R www-data:www-data /var/www/
+
+# Cleanup temp git repo
+RUN rm -rf /tmp/autowats
+
 # Expose only port 1486
 EXPOSE 1486
 

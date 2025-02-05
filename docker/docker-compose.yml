@@ -4,6 +4,8 @@ services:
     container_name: autowats-cgi-server
     ports:
       - "127.0.0.1:1486:1486"
+    volumes:
+      - autowats_db:/var/www/db  # Mount database volume
     restart: unless-stopped
     networks:
       - cgi_network
@@ -11,3 +13,6 @@ services:
 networks:
   cgi_network:
     driver: bridge
+
+volumes:
+  autowats_db:  # Define a named volume
