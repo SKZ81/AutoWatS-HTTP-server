@@ -3,20 +3,20 @@
 import os
 import sqlite3
 import json
-import config
+import common
 
 
-@config.cgi_tb
+@common.cgi_tb
 def process_request():
-    config.check_request_method("GET")
+    common.check_request_method("GET")
 
-    conn = sqlite3.connect(config.DATABASE_FILE)
+    conn = sqlite3.connect(common.DATABASE_FILE)
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM varieties')
     data = cursor.fetchall()
     conn.close()
     column_names = [desc[0] for desc in cursor.description]
 
-    config.do_json(column_names, data)
+    common.do_json(column_names, data)
 
 process_request()

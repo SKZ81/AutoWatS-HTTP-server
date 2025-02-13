@@ -3,7 +3,7 @@
 import os
 import sqlite3
 import json
-import config
+import common
 
 print("Content-Type: application/json\n")
 print("{\"varieties\": 1737131288}")

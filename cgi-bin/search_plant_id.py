@@ -6,18 +6,18 @@ import sqlite3
 import json
 import urllib
 import urllib.parse
-import config
+import common
 
 
-@config.cgi_tb
+@common.cgi_tb
 def process_request():
-    config.check_request_method("GET")
+    common.check_request_method("GET")
 
     query_string = os.environ.get('QUERY_STRING', '')
     params = urllib.parse.parse_qs(query_string)
     uuid = params.get('uuid', [''])[0]
 
-    conn = sqlite3.connect(config.DATABASE_FILE)
+    conn = sqlite3.connect(common.DATABASE_FILE)
     cursor = conn.cursor()
     SQLrequest = f"""
     SELECT PLANTS.*, VARIETIES.NAME AS varietyName, VARIETIES.PHOTO_URL AS photoUrl
@@ -40,7 +40,7 @@ def process_request():
         print("{'reason': 'multiple entries found for UUID', 'request':'" + SQLrequest + "'}")
     else:
         column_names = [desc[0] for desc in cursor.description]
-        config.do_json(column_names, data[0])
+        common.do_json(column_names, data[0])
 
 
 process_request()

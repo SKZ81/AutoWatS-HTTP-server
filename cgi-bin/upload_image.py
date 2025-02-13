@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-import config
+import common
 import os
 import sys
 from multipart import MultipartParser, parse_options_header
 import tempfile
 
-@config.cgi_tb
+@common.cgi_tb
 def handle_file_upload():
     # Get content length and content type from environment variables
     content_length = int(os.environ.get("CONTENT_LENGTH", 0))

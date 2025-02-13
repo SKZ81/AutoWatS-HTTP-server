@@ -5,11 +5,11 @@ import sys
 import sqlite3
 import json
 import urllib
-import config
+import common
 
-@config.cgi_tb
+@common.cgi_tb
 def process_request():
-    config.check_request_method("POST")
+    common.check_request_method("POST")
 
     try:
         content_length = int(os.environ.get('CONTENT_LENGTH', 0))
@@ -33,7 +33,7 @@ def process_request():
         sys.exit(0)
 
     try:
-        conn = sqlite3.connect(config.DATABASE_FILE)
+        conn = sqlite3.connect(common.DATABASE_FILE)
         cursor = conn.cursor()
         cursor.execute(SQLRequest)
         if cursor.rowcount == 0:
