@@ -28,3 +28,16 @@ def cgi_tb(func):
             print("</pre>")
             return None
     return wrapper
+
+
+def do_json(column_names, data):
+    # Prepare JSON object
+    json_data = []
+    for row in data:
+        row_dict = {}
+        for i, value in enumerate(row):
+            row_dict[column_names[i]] = value
+        json_data.append(row_dict)
+    # Dump JSON plaintext
+    print("Content-Type: application/json\n")
+    print(json.dumps(json_data))
