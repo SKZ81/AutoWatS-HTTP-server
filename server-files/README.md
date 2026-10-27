@@ -45,6 +45,16 @@ For instance:
 
 **NOTE:** If your installation path differs from `/var/www/autowats-cgi`, you **MUST** edit the service file, and adapt the `WorkingDirectory` variable in `[service]` section to match your installation.
 
+## Updating
+
+In order to force a rebuild of the container after pushing new commits into the repo, use:
+
+```bash
+$ docker-compose build --no-cache autowats-cgi-server
+```
+
+And restart it using `systectl` or `docker-compose up -d --no-deps autowats-cgi-server`.
+
 ## Exposing the server
 
 The service assumes it runs in a secured environment with a front instance of nginx that manages a listening HTTPS port. It emulates sub-domains, and redirects the traffic to a sub-domain to a dedicated docker instance.
