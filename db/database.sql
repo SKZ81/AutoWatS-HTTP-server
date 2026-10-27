@@ -44,4 +44,18 @@ INSERT INTO LastUpdates VALUES(1, 'varieties',1737131288);
 DELETE FROM sqlite_sequence;
 INSERT INTO sqlite_sequence VALUES('varieties',6);
 
+
+
+CREATE TABLE IF NOT EXISTS Sessions (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    key_hash    TEXT NOT NULL UNIQUE,
+    created_at  INTEGER NOT NULL,
+    duration    INTEGER NOT NULL DEFAULT 0 CHECK (duration >= 0),
+    is_valid    INTEGER NOT NULL DEFAULT 1 CHECK (is_valid IN (0, 1)),
+    info        TEXT NOT NULL DEFAULT ''
+);
+
+CREATE INDEX IF NOT EXISTS idx_sessions_validity
+ON Sessions (is_valid, created_at);
+
 COMMIT;

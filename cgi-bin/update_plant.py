@@ -5,7 +5,7 @@ import common
 
 def updatePlantSQL(params):
     try:
-        set_clause = ', '.join([f"{key} = '{value}'" for key, value in params.items() if key != 'UUID'])
+        set_clause = ', '.join([f"{key} = '{value}'" for key, value in params.items() if key not in ('session_key', 'UUID')])
         uuid = params['UUID']
         return f"UPDATE Plants SET {set_clause} WHERE ACTIVE=TRUE AND UUID='{uuid}'", None
     except KeyError as e:

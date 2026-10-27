@@ -4,6 +4,7 @@ import traceback
 import json
 import urllib.parse
 import sqlite3
+import sessions
 
 DATABASE_FILE="/var/www/db/database.db"
 DEBUG_MODE=True
@@ -36,13 +37,21 @@ def send_error(code: int, info=None):
         info = {}
     if "result" not in info:
         info["result"] = "failed"
-    serialize_json_info(info, ["result", "reason", "sql_request"])
+    serialize_json_info(info, ["result", "reason", "sql_request", "session_key"])
 
 
 def check_request_method(expected):
     request_method = os.environ.get('REQUEST_METHOD', '')
     if (request_method != expected):
         send_error(400, {"reason": "only %s allowed"%(expected)})
+        sys.exit(0)
+
+def check_session_validity(conn, session_key: str):
+    if session_key is None:
+        send_error(401, {"reason": "No session key provided"})
+        sys.exit(0)
+    if not sessions.validate(conn, session_key):
+        send_error(401, {"reason": "Invalid session key", "session_key": session_key})
         sys.exit(0)
 
 # CGI TraceBack wrapper allow to embed the error backtrace
@@ -79,9 +88,12 @@ def serialize_json_data(column_names, data, unique=False):
     print(json_str)
 
 
-def process_SQL(sql_builder, params, on_success):
+def process_SQL(sql_builder, params, on_success, check_session=False):
     conn = sqlite3.connect(DATABASE_FILE)
     cursor = conn.cursor()
+
+    if check_session:
+        check_session_validity(conn, params.get("session_key", None))
 
     SQLRequest, error = sql_builder(params)
     if error:
@@ -142,4 +154,4 @@ def process_POST(sql_builder):
             print("Content-Type: application/json\n")
             print('{"result": "OK"}')
 
-    process_SQL(sql_builder, params, commit_and_reply)
+    process_SQL(sql_builder, params, commit_and_reply, check_session=True)
