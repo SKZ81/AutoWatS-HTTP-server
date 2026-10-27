@@ -7,12 +7,12 @@ services:
     volumes:
       - autowats_db:/var/www/db  # Mount database volume
     restart: unless-stopped
-    networks:
-      - cgi_network
-
-networks:
-  cgi_network:
-    driver: bridge
+#     networks:
+#       - cgi_network
+#
+# networks:
+#   cgi_network:
+#     driver: bridge
 
 volumes:
   autowats_db:  # Define a named volume
