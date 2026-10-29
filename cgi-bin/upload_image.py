@@ -13,18 +13,14 @@ def handle_file_upload():
 
     # Check if content type is multipart/form-data
     if "multipart/form-data" not in content_type:
-        print("Status: 400 Bad Request")
-        print("Content-Type: text/plain\n")
-        print("Invalid content type.")
+        common.send_error(400, {"reason": "Invalid content type"})
         return
 
     # Parse boundary from content type
     _, params = parse_options_header(content_type)
     boundary = params.get("boundary")
     if not boundary:
-        print("Status: 400 Bad Request")
-        print("Content-Type: text/plain\n")
-        print("Missing boundary in content type.")
+        common.send_error(400, {"reason": "Missing boundary in content type"})
         return
 
     # Read the request body (file upload data) from stdin

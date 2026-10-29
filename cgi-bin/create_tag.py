@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 
-import os
-import sys
-import sqlite3
-import json
-import urllib
+import uuid
 import common
 
 def createPlantUuidSQL(params):
-        uuid = params["uuid"]
-        return f"INSERT INTO PLANTS (UUID) VALUES ('{uuid}')"
+    try:
+        uuid = params.get("uuid", str(uuid.uuid4())
+        return f"INSERT INTO PLANTS (UUID) VALUES ('{uuid}')", None
+    # except KeyError as e:
+    #     return None, "UUID not found in query params"
 
 common.process_POST(createPlantUuidSQL)
