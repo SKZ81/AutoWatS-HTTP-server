@@ -5,9 +5,26 @@ import json
 import urllib.parse
 import sqlite3
 import sessions
+from contextlib import contextmanager
 
 DATABASE_FILE="/var/www/db/database.db"
 DEBUG_MODE=True
+
+
+@contextmanager
+def db_connect(database: str = DATABASE_FILE):
+    conn = sqlite3.connect(DATABASE_FILE)
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys = ON")
+
+    try:
+        yield conn
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
 
 http_reason_phrases = {
     200: "OK",
@@ -89,26 +106,24 @@ def serialize_json_data(column_names, data, unique=False):
 
 
 def process_SQL(sql_builder, params, on_success, check_session=False):
-    conn = sqlite3.connect(DATABASE_FILE)
-    cursor = conn.cursor()
+    with db_connect() as conn:
+        cursor = conn.cursor()
 
-    if check_session:
-        check_session_validity(conn, params.get("session_key", None))
+        if check_session:
+            check_session_validity(conn, params.get("session_key", None))
 
-    SQLRequest, error = sql_builder(params)
-    if error:
-        send_error(400, {"reason": error})
-        sys.exit(0)
+        SQLRequest, error = sql_builder(params)
+        if error:
+            send_error(400, {"reason": error})
+            sys.exit(0)
 
-    try:
-        cursor.execute(SQLRequest)
-        on_success(conn, cursor)
-    except Exception as e:
-        # Handle other SQLite errors
-        send_error(500, {"reason": str(e),
-                         "sql_request": SQLRequest})
-    finally:
-        conn.close()
+        try:
+            cursor.execute(SQLRequest)
+            on_success(conn, cursor)
+        except Exception as e:
+            # Handle other SQLite errors
+            send_error(500, {"reason": str(e),
+                            "sql_request": SQLRequest})
 
 
 # Process an HTTP GET request.

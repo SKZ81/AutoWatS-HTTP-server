@@ -5,9 +5,35 @@ import sqlite3
 import time
 
 
-def _hash_key(session_key: str) -> str:
-    """Return the SHA-256 hash of a session key."""
-    return hashlib.sha256(session_key.encode("utf-8")).hexdigest()
+SESSION_DURATION = 1800
+COOKIE_NAME = "session_key"
+
+
+def _generate_key() -> str:
+    return secrets.token_urlsafe(32)
+
+
+def _hash_key(key) -> str:
+    return hashlib.sha256(key.encode("utf-8")).hexdigest()
+
+
+def _cleanup_session(conn: sqlite3.Connection,
+                     delay: int = 300
+) -> int:
+    """Clean invalid sessions from database after delay."""
+    now = int(time.time())
+
+    cursor = conn.execute(
+        """
+        DELETE FROM Sessions
+        WHERE is_valid = 0
+            AND duration > 0
+            AND created_at + duration + ? <= ?
+        """,
+        (delay, now,),
+    )
+
+    return cursor.rowcount
 
 
 def _invalidate_expired_sessions(conn: sqlite3.Connection) -> None:
@@ -26,34 +52,29 @@ def _invalidate_expired_sessions(conn: sqlite3.Connection) -> None:
     )
 
 
-def create(
-    conn: sqlite3.Connection,
-    duration: int = 0,
-    info: str = "",
-) -> str:
-    """
-    Create a session and return its secret key.
 
-    duration: validity duration in seconds; 0 means no expiration.
-    info: free-text information associated with the session.
-    """
+def create(conn: sqlite3.Connection,
+           user_id: int,
+           duration: int=SESSION_DURATION
+) -> str:
     if duration < 0:
         raise ValueError("Session duration cannot be negative")
 
-    session_key = secrets.token_hex(32)
-    key_hash = _hash_key(session_key)
-    now = int(time.time())
+    key = _generate_key()
 
     conn.execute(
         """
         INSERT INTO Sessions
-            (key_hash, created_at, duration, is_valid, info)
-        VALUES (?, ?, ?, 1, ?)
-        """,
-        (key_hash, now, duration, info),
-    )
+            (key_hash, user_id, created_at, duration)
+        VALUES (?, ?, ?, ?)
+        """, (
+        _hash_key(key),
+        user_id,
+        int(time.time()),
+        duration
+    ))
 
-    return session_key
+    return key
 
 
 def invalidate(conn: sqlite3.Connection, session_key: str) -> bool:
@@ -75,19 +96,19 @@ def invalidate(conn: sqlite3.Connection, session_key: str) -> bool:
 
     return cursor.rowcount > 0
 
-def delete(conn: sqlite3.Connection, session_key: str) -> bool:
+def delete(conn: sqlite3.Connection, session_id: int) -> bool:
     """
     Completely remove a session.
     Return True if a session was found and deleted.
     """
-    key_hash = _hash_key(session_key)
+    # key_hash = _hash_key(session_key)
 
     cursor = conn.execute(
         """
         DELETE FROM Sessions
-        WHERE key_hash = ?
+        WHERE id = ?
         """,
-        (key_hash,),
+        (session_id,)
     )
 
     return cursor.rowcount > 0
@@ -106,14 +127,17 @@ def validate(conn: sqlite3.Connection, session_key: str) -> bool:
 
     row = conn.execute(
         """
-        SELECT 1
+        SELECT id
         FROM Sessions
         WHERE key_hash = ?
             AND is_valid = 1
-        LIMIT 1
+            AND (
+                duration = 0
+                OR created_at + duration > ?
+            )
         """,
-        (key_hash,),
-    ).fetchone()
+        (key_hash, int(time.time())
+    )).fetchone()
 
     return row is not None
 
@@ -121,12 +145,18 @@ def list_all(conn: sqlite3.Connection) -> list:
     """
     Return all existing sessions
     """
-
-    res = conn.execute(
+    cursor = conn.execute(
         """
-        SELECT *
+        SELECT Sessions.*, Users.username
         FROM Sessions
+        LEFT JOIN Users ON Sessions.user_id = Users.id;
         """
     )
+    rows =  cursor.fetchall()
 
-    return list(res)
+    column_names = [desc[0] for desc in cursor.description]
+    sessions = [{column_names[i]: value for i, value in enumerate(row)} for row in rows]
+    print(sessions)
+    return sessions
+
+
